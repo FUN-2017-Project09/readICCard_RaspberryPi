@@ -1,0 +1,2 @@
+# readICCard_RaspberryPi
+ラズベリーパイ側のソースリポジトリ
