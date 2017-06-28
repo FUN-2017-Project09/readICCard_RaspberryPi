@@ -3,6 +3,7 @@
 
 import readBIN
 import readIDm
+from cli import CommandLineInterface
 
 """
 How To Use
@@ -26,6 +27,8 @@ class readICCard:
     
     @classmethod 
     def __init__(cls):
+        binary = None
+        idm = None
         binary = readBIN.readBIN()
         idm = readIDm.readIDm()
         cls.useHistory = binary.getUseHistory()
@@ -82,3 +85,8 @@ class readICCard:
     def getOperatorCode(cls, hisNum):
         code = str(format(cls.useHistory[hisNum][6],'b').zfill(8)) + str(format(cls.useHistory[hisNum][7],'b').zfill(8))
         return int(code,2)
+
+    @classmethod
+    def restart(cls):
+        test = readIDm.readIDm()
+        test.TagTool.run()
