@@ -1,4 +1,5 @@
-# -*- coding: UTF-8 -*-
+#!/usr/bin/python
+#coding: utf-8
 import Tkinter
 from Tkinter import *
 import ttk
@@ -7,7 +8,7 @@ import sys
 sys.path.append('/usr/local/src/nfcpy')
 import nfc
 import readICCard
-import sys
+import sys, os
 
 today = datetime.date.today()
 TODAY = str(today.year) + "/" + str(today.month) + "/" + str(today.day)
@@ -49,12 +50,8 @@ def GUI():
 
 def windel(event):
     #window.destroy()
-    #GUI()
-    sys.exit(True)
+    GUI()
 
-def finish(event):
-    sys.exit(False)
-    
 def start(event):
     while True:
         defineData()
@@ -65,10 +62,8 @@ def start(event):
     canvas.create_rectangle(800, 480, 0, 0, fill = 'white')   
     canvas.place(x=0, y=0)                                    
     
-    button1 = Tkinter.Button(window, text = '戻る', height = 4, width = 16)
-    button1.bind("<Button-1>", windel)
-    button2 = Tkinter.Button(window, text = '終了', height = 4, width = 16)
-    button2.bind("<Button-1>", finish)
+    button = Tkinter.Button(window, text = '閉じる', height = 4, width = 16)
+    button.bind("<Button-1>", windel)
 
     IDmessage0  = Tkinter.Label(text = ( u'ID : ' ), background = '#FFFFFF', font=(u'游ゴシック Light', 32))
     IDmessage1  = Tkinter.Label(text = ( ID ), background = '#FFFFFF', font=(u'游ゴシック Light', 32))
@@ -103,8 +98,7 @@ def start(event):
     IDmessage1.place(x = 130 , y = 50)
     balmessage0.place(x = 50, y = 100)
     balmessage1.place(x = 300, y = 100)
-    button1.place(x = 450, y = 400)
-    button2.place(x = 600, y = 400)
+    button.place(x = 600, y = 300)
     window.mainloop()
 
 if __name__ == '__main__':
