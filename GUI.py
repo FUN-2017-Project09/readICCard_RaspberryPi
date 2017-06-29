@@ -7,7 +7,6 @@ import sys
 sys.path.append('/usr/local/src/nfcpy')
 import nfc
 import readICCard
-import sys
 
 today = datetime.date.today()
 TODAY = str(today.year) + "/" + str(today.month) + "/" + str(today.day)
