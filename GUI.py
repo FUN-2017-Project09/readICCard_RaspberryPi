@@ -7,7 +7,7 @@ import sys
 sys.path.append('/usr/local/src/nfcpy')
 import nfc
 import readICCard
-import sys
+import tkMessageBox
 
 today = datetime.date.today()
 TODAY = str(today.year) + "/" + str(today.month) + "/" + str(today.day)
@@ -19,16 +19,27 @@ balance = 0
 def defineData():
     global ID, datehistory, stop_and_station, balance
     i = 0
-    hoge = readICCard.readICCard()
-    forData = hoge.getUseHistory()
-    ID = hoge.getIDM()
-    balance = hoge.getBalance(0)
-    for i  in range(20):
-        if ((forData[i][1] == 15 and forData[i][3] == 15) or (forData[i][1] == "13" and forData[i][3] == "13")) and (hoge.getOperatorCode(i) == 2315 or hoge.getOperatorCode(i) == 2316):
-            stop_and_station = "バス"
-            datehistory = "20" + str(hoge.getYear(i)) + "/" + str(hoge.getMonts(i)) + "/" + str(hoge.getDay(i))
-            break
-        i+=1
+    try:
+        hoge = readICCard.readICCard()
+        forData = hoge.getUseHistory()
+        ID = hoge.getIDM()
+        balance = hoge.getBalance(0)
+        for i  in range(20):
+            if ((forData[i][1] == 15 and forData[i][3] == 15) or (forData[i][1] == "13" and forData[i][3] == "13")) and (hoge.getOperatorCode(i) == 2315 or hoge.getOperatorCode(i) == 2316):
+                stop_and_station = "バス"
+                datehistory = "20" + str(hoge.getYear(i)) + "/" + str(hoge.getMonts(i)) + "/" + str(hoge.getDay(i))
+                break
+            i+=1
+    except IOError:
+        if (tkMessageBox.askretrycancel("IOError", "エラー\nICカード読み取り機を認識していません\nUSBを挿し直してから再試行ボタンを押してください\nキャンセルでプログラムを終了します")):
+            sys.exit(True)
+        else:
+            sys.exit(False)
+    except AttributeError:
+        tkmessageBox.showerror("AttributeError","履歴領域が存在しないカードです\n別のカードを使用してください。")
+        sys.exit(True)
+    except TypeError:
+        tkmessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
     #del hoge
 
 def GUI():
@@ -106,6 +117,8 @@ def start(event):
     button1.place(x = 450, y = 400)
     button2.place(x = 600, y = 400)
     window.mainloop()
+
+    
 
 if __name__ == '__main__':
     GUI()
