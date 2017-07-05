@@ -54,8 +54,6 @@ def GUI():
     canvas.create_rectangle(800, 480, 0, 0, fill = 'white')   
     canvas.place(x=0, y=0)
 
-    
-    
     button = Tkinter.Button(window, text = (u'読み取り開始'), width =15, height=2)
     button.bind("<Button-1>", start)
     button.place(x = 60, y = 95)
@@ -81,9 +79,11 @@ def start(event):
     canvas.place(x=0, y=0)                                    
 
     
-    button1 = Tkinter.Button(window, text = '戻る', height = 4, width = 16)
+    button1 = Tkinter.Button(window, text = '戻る', height = 2, width = 7)
+    button1.config(font=("游ゴシック Light", 20))
     button1.bind("<Button-1>", windel)
-    button2 = Tkinter.Button(window, text = '終了', height = 4, width = 16)
+    button2 = Tkinter.Button(window, text = '終了', height = 2, width = 7)
+    button2.config(font=("游ゴシック Light", 20))
     button2.bind("<Button-1>", finish)
 
     IDmessage0  = Tkinter.Label(text = ( u'ID : ' ), background = '#FFFFFF', font=(u'游ゴシック Light', 32))
