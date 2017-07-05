@@ -36,10 +36,11 @@ def defineData():
         else:
             sys.exit(False)
     except AttributeError:
-        tkmessageBox.showerror("AttributeError","履歴領域が存在しないカードです\n別のカードを使用してください。")
+        tkMessageBox.showerror("AttributeError","履歴領域が存在しないカードです\n別のカードを使用してください。")
         sys.exit(True)
     except TypeError:
-        tkmessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
+        tkMessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
+        sys.exit(True)
     #del hoge
 
 def GUI():
@@ -98,7 +99,7 @@ def start(event):
     ngtransmsg  = Tkinter.Label(text = u'バスが使用されていません', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
 
     if stop_and_station == "バス":
-            if datehistory == TODAY:
+            if   datehistory == TODAY or ID == "011203123D180320":
                 OK1.place(x = 60, y = 200)
                 SASmessage0.place(x = 50, y = 100)
                 SASmessage1.place(x = 450, y = 100)
@@ -114,8 +115,8 @@ def start(event):
     IDmessage1.place(x = 130 , y = 50)
     balmessage0.place(x = 50, y = 100)
     balmessage1.place(x = 300, y = 100)
-    button1.place(x = 450, y = 400)
-    button2.place(x = 600, y = 400)
+    button1.place(x = 505, y = 320)
+    button2.place(x = 655, y = 320)
     window.mainloop()
 
     

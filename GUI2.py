@@ -82,7 +82,7 @@ def start(event):
     ngtransmsg  = Tkinter.Label(text = u'バスが使用されていません', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
 
     if stop_and_station == "バス":
-            if datehistory == TODAY:
+            if True:
                 OK1.place(x = 60, y = 200)
                 SASmessage0.place(x = 50, y = 100)
                 SASmessage1.place(x = 450, y = 100)
