@@ -43,7 +43,6 @@ def defineData():
         tkmessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
         sys.exit(True)
     #del hoge
-
 def GUI():
     global window
     window = Tkinter.Tk()
@@ -53,11 +52,14 @@ def GUI():
 
     canvas = Tkinter.Canvas(window, width = 800, height = 480)
     canvas.create_rectangle(800, 480, 0, 0, fill = 'white')   
-    canvas.place(x=0, y=0)                                    
+    canvas.place(x=0, y=0)
 
-    button = Tkinter.Button(window, text = (u'読み取り開始'), height = 10, width = 75)
+    
+    
+    button = Tkinter.Button(window, text = (u'読み取り開始'), width =15, height=2)
     button.bind("<Button-1>", start)
-    button.place(x = 125, y = 140)
+    button.place(x = 60, y = 95)
+    button.config(font=("游ゴシック Light", 60))
     window.mainloop()
 
 def windel(event):
@@ -77,6 +79,7 @@ def start(event):
     canvas = Tkinter.Canvas(window, width = 800, height = 480)
     canvas.create_rectangle(800, 480, 0, 0, fill = 'white')   
     canvas.place(x=0, y=0)                                    
+
     
     button1 = Tkinter.Button(window, text = '戻る', height = 4, width = 16)
     button1.bind("<Button-1>", windel)
@@ -116,8 +119,8 @@ def start(event):
     IDmessage1.place(x = 130 , y = 50)
     balmessage0.place(x = 50, y = 100)
     balmessage1.place(x = 300, y = 100)
-    button1.place(x = 450, y = 400)
-    button2.place(x = 600, y = 400)
+    button1.place(x = 510, y = 300)
+    button2.place(x = 655, y = 300)
     window.mainloop()
 
     
