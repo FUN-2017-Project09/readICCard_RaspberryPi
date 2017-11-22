@@ -1,7 +1,10 @@
 #!/bin/bash
+
+binary_path=`dirname $0`
 while :
 do
-  if sudo python GUI.py
+if sudo python ${binary_path}/GUI-after.py
+#if sudo python GUI-after.py
   then
     break
   fi

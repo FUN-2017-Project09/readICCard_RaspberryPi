@@ -8,8 +8,7 @@ sys.path.append('/usr/local/src/nfcpy')
 import nfc
 import readICCard
 import tkMessageBox
-import serial
-import time
+import requests
 
 today = datetime.date.today()
 TODAY = str(today.year) + "/" + str(today.month) + "/" + str(today.day)
@@ -17,9 +16,8 @@ ID = ""
 datehistory = ""
 stop_and_station =  ""
 balance = 0
-printed = 0
-
 CHEAT_CARD_ID = "011203123D180320"
+judge = "OK"
 
 def defineData():
     global ID, datehistory, stop_and_station, balance
@@ -47,6 +45,39 @@ def defineData():
         tkmessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
         sys.exit(True)
     #del hoge
+
+
+
+def reg():
+    global judge
+    URL = 'http://192.168.2.101/www/debugpage2/type/receive.php?node=1&ID='
+    totalURL = URL + ID
+    #print totalURL
+    r = requests.get(totalURL)
+
+    if r.text.count('IDm') == 0:
+        URL = 'http://192.168.2.101/www/debugpage2/type/register.php?node=1&ID='
+        totalURL = URL + ID
+        r = requests.get(totalURL)
+
+    else:
+        check = r.text.index('時間は'.decode("utf-8"))
+        if r.text[check+9] == "0":
+            smonth = r.text[check+10]
+        else:
+            smonth = r.text[check+9 : check+11]
+        if r.text[check+12] == "0":
+            sday = r.text[check+13]
+        else:
+            sday = r.text[check+12 : check+14]
+        sevdate = r.text[check+4 : check+8] + "/" + smonth + "/" + sday
+        print sevdate
+        print TODAY
+        if sevdate != TODAY:
+            judge = "OK"
+        else:
+            judge = "NG"
+
         
 def GUI():
     global window
@@ -72,26 +103,15 @@ def windel(event):
 
 def finish(event):
     sys.exit(False)
-
-def printCoupon(event):
-    global printed
-    if printed == 0:
-        ser = serial.Serial("/dev/ttyACM0", baudrate = 9600, timeout = 2)
-        time.sleep(2)
-        ser.write("p")
-        ser.close()
-        printed = 1
-    if printed == 1:
-        tkmessageBox.showerror("printed", "印刷完了済み")
-
+    
 def start(event):
     while True:
         defineData()
         if ID != "":
             break
 
-    global printed
-    printed = 0
+    reg()
+    
     canvas = Tkinter.Canvas(window, width = 800, height = 480)
     canvas.create_rectangle(800, 480, 0, 0, fill = 'white')   
     canvas.place(x=0, y=0)                                    
@@ -102,9 +122,6 @@ def start(event):
     button2 = Tkinter.Button(window, text = '終了', height = 2, width = 7)
     button2.config(font=("游ゴシック Light", 20))
     button2.bind("<Button-1>", finish)
-    button3 = Tkinter.Button(window, text = '印刷', height = 2, width = 7)
-    button3.config(font=("游ゴシック Light", 20))
-    button3.bind("<Button-1>", printCoupon)
 
     IDmessage0  = Tkinter.Label(text = ( u'ID : ' ), background = '#FFFFFF', font=(u'游ゴシック Light', 32))
     IDmessage1  = Tkinter.Label(text = ( ID ), background = '#FFFFFF', font=(u'游ゴシック Light', 32))
@@ -122,31 +139,33 @@ def start(event):
     ngdate      = Tkinter.Label(text = datehistory , foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
     ngtransmsg  = Tkinter.Label(text = u'バスが使用されていません', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
 
-    if stop_and_station == "バス":
-            if datehistory == TODAY or ID == CHEAT_CARD_ID:
-                OK1.place(x = 60, y = 200)
-                button3.place(x = 370, y = 300)
-                #button3.config(state="disabled")
-                SASmessage0.place(x = 50, y = 100)
-                SASmessage1.place(x = 450, y = 100)
-            else:
-                NG1.place(x = 60, y = 200)
-                ngdatemsg.place(x = 60, y = 300)
-                ngdate.place(x = 350, y = 300)
-    else:
-                NG1.place(x = 60, y = 200)
+    twicemsg = Tkinter.Label(text = u'本日は既にご利用済みです', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
+
+    if judge == "OK":  
+        if stop_and_station == "バス":
+                if datehistory == TODAY or ID == CHEAT_CARD_ID:
+                    OK1.place(x = 60, y = 300)
+                else:
+                    NG1.place(x = 60, y = 230)
+                    ngdatemsg.place(x = 60, y = 300)
+                    ngdate.place(x = 350, y = 300)
+        else:
+                NG1.place(x = 60, y = 230)
                 ngtransmsg.place(x = 60, y = 300)
+    else:
+        twicemsg.place(x = 60, y = 300)
 
     IDmessage0.place(x = 50, y = 50)
     IDmessage1.place(x = 130 , y = 50)
-    balmessage0.place(x = 50, y = 100)
-    balmessage1.place(x = 300, y = 100)
+    SASmessage0.place(x = 50, y = 100)
+    SASmessage1.place(x = 430, y = 100)
+    balmessage0.place(x = 50, y = 150)
+    balmessage1.place(x = 300, y = 150)
     button1.place(x = 510, y = 300)
     button2.place(x = 655, y = 300)
     window.mainloop()
 
-
-
+    
 
 if __name__ == '__main__':
     GUI()

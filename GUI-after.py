@@ -10,16 +10,21 @@ import readICCard
 import tkMessageBox
 import serial
 import time
+import requests
+from bs4 import BeautifulSoup
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 today = datetime.date.today()
 TODAY = str(today.year) + "/" + str(today.month) + "/" + str(today.day)
+#TODAY = "2017/10/23"
 ID = ""
 datehistory = ""
 stop_and_station =  ""
 balance = 0
-printed = 0
-
 CHEAT_CARD_ID = "011203123D180320"
+judge = "OK"
+
 
 def defineData():
     global ID, datehistory, stop_and_station, balance
@@ -41,19 +46,51 @@ def defineData():
         else:
             sys.exit(False)
     except AttributeError:
-        tkmessageBox.showerror("AttributeError","履歴領域が存在しないカードです\n別のカードを使用してください。")
+        tkMessageBox.showerror("AttributeError","履歴領域が存在しないカードです\n別のカードを使用してください。")
         sys.exit(True)
     except TypeError:
-        tkmessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
+        tkMessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
         sys.exit(True)
     #del hoge
+
+
+
+def reg():
+    global judge
+
+    payload = {
+    'email': 'root@fun.ac.jp',
+    'password': 'project9',
+    }
+
+    
+    session = requests.session()
+    
+    #tokenr = session.get("http://funlbs.azurewebsites.net/login_lbs/public_html/login.php", verify=False) 
+    tokenr = session.get('http://192.168.2.254/www/login_lbs/public_html/login.php', verify=False) #local
+
+    soup = BeautifulSoup(tokenr.text)
+    token = soup.find(attrs = {'name': 'token'}).get('value')
+    payload['token'] = token
+    #logg = session.post("http://funlbs.azurewebsites.net/login_lbs/public_html/login.php", data = payload, verify=False)
+    logg = session.post('http://192.168.2.254/www/login_lbs/public_html/login.php', data = payload,  verify=False) #local
+
+    URL = "http://192.168.2.254/www/login_lbs/public_html/icas_discount/register.php?Area=1&IDm="  #local
+    #URL = "http://funlbs.azurewebsites.net/login_lbs/public_html/icas_discount/register.php?Area=1&IDm="
+    totalURL = URL + ID
+    check = session.get(totalURL, data = payload, verify=False)
+
+    if check.text[17] == u"本":
+        judge = "NG"
+    else:
+        judge = "OK"
+
         
 def GUI():
     global window
     window = Tkinter.Tk()
     window.title(u"ICカード割引")
     window.attributes("-zoomed", "1")
-    #window.geometry('800x480+0+0')
 
     canvas = Tkinter.Canvas(window, width = 800, height = 480)
     canvas.create_rectangle(800, 480, 0, 0, fill = 'white')   
@@ -66,8 +103,6 @@ def GUI():
     window.mainloop()
 
 def windel(event):
-    #window.destroy()
-    #GUI()
     sys.exit(True)
 
 def finish(event):
@@ -82,7 +117,8 @@ def printCoupon(event):
         ser.close()
         printed = 1
     if printed == 1:
-        tkmessageBox.showerror("printed", "印刷完了済み")
+        tkMessageBox.showerror("printed", "印刷完了済み")
+
 
 def start(event):
     while True:
@@ -90,8 +126,18 @@ def start(event):
         if ID != "":
             break
 
+    if stop_and_station == "バス":
+        if datehistory == TODAY:
+            reg()
+
+    
+    if ID ==  "011203123D180320":
+        reg()
+    
+
     global printed
     printed = 0
+    
     canvas = Tkinter.Canvas(window, width = 800, height = 480)
     canvas.create_rectangle(800, 480, 0, 0, fill = 'white')   
     canvas.place(x=0, y=0)                                    
@@ -122,31 +168,36 @@ def start(event):
     ngdate      = Tkinter.Label(text = datehistory , foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
     ngtransmsg  = Tkinter.Label(text = u'バスが使用されていません', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
 
-    if stop_and_station == "バス":
-            if datehistory == TODAY or ID == CHEAT_CARD_ID:
-                OK1.place(x = 60, y = 200)
-                button3.place(x = 370, y = 300)
-                #button3.config(state="disabled")
-                SASmessage0.place(x = 50, y = 100)
-                SASmessage1.place(x = 450, y = 100)
-            else:
-                NG1.place(x = 60, y = 200)
-                ngdatemsg.place(x = 60, y = 300)
-                ngdate.place(x = 350, y = 300)
-    else:
-                NG1.place(x = 60, y = 200)
-                ngtransmsg.place(x = 60, y = 300)
+    twicemsg = Tkinter.Label(text = u'本日は既にご利用済みです', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
 
-    IDmessage0.place(x = 50, y = 50)
-    IDmessage1.place(x = 130 , y = 50)
-    balmessage0.place(x = 50, y = 100)
-    balmessage1.place(x = 300, y = 100)
-    button1.place(x = 510, y = 300)
-    button2.place(x = 655, y = 300)
+    
+    if stop_and_station == "バス":
+        if datehistory == TODAY or ID == CHEAT_CARD_ID:
+            if judge == "OK":  
+                OK1.place(x = 60, y = 250)
+                button3.place(x = 335, y = 350)
+            else:
+                twicemsg.place(x = 60, y = 250)
+        else:
+            NG1.place(x = 60, y = 200)
+            ngdatemsg.place(x = 60, y = 270)
+            ngdate.place(x = 350, y = 270)
+    else:
+        NG1.place(x = 60, y = 230)
+        ngtransmsg.place(x = 60, y = 300)
+    
+
+    IDmessage0.place(x = 50, y = 20)
+    IDmessage1.place(x = 130 , y = 20)
+    SASmessage0.place(x = 50, y = 75)
+    SASmessage1.place(x = 430, y = 75)
+    balmessage0.place(x = 50, y = 130)
+    balmessage1.place(x = 300, y = 130)
+    button1.place(x = 480, y = 350)
+    button2.place(x = 625, y = 350)
     window.mainloop()
 
-
-
+    
 
 if __name__ == '__main__':
     GUI()
