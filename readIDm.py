@@ -365,14 +365,12 @@ class TagTool(CommandLineInterface):
         return True
 
     def show_tag(self, tag):
-        #print(tag)
         idd = str(tag)
         idd += " "
         s = idd.find("ID=")
         idd = idd[s+3:]
         g = idd.find(" ")
         idd = idd[:g]
-        #print(idd)
         readIDm.retIDm = idd
 
         if tag.ndef:

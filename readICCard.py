@@ -7,20 +7,20 @@ from cli import CommandLineInterface
 
 """
 How To Use
-インポート:                                           import readICCard
-インスタンス生成:                              hoge = readICCard.readICCard() 
-データを手に入れる(例は年):          fuga = hoge.getYear(2)]
+インポート: import readICCard
+インスタンス生成: hoge = readICCard.readICCard()
+データを手に入れる(例は年): fuga = hoge.getYear(2)]
 
 method一覧
-getUseHistory():		    利用履歴20件のバイナリが入った二次元配列
-getEntryHistory():  		   入出場履歴３件のバイナリが入った二次元配列
-getIDM():			   IDm取得
-getYear(履歴番号(max:20)):	   指定した利用履歴の記録年
+getUseHistory(): 利用履歴20件のバイナリが入った二次元配列
+getEntryHistory(): 入出場履歴３件のバイナリが入った二次元配列
+getIDM(): IDm取得
+getYear(履歴番号(max:20)): 指定した利用履歴の記録年
 getMonth(履歴番号(max:20)): 指定した利用履歴の記録月
-getDay(履歴番号(max:20)):	   指定した利用履歴の記録日
-getProcess(履歴番号(max:20)):指定した利用履歴の利用種別
-getBalance(履歴番号(max:20)):指定した利用履歴の残高
-getOperatorCode(履歴番号(max:20)):指定した利用履歴の事業者コード
+getDay(履歴番号(max:20)): 指定した利用履歴の記録日
+getProcess(履歴番号(max:20)): 指定した利用履歴の利用種別
+getBalance(履歴番号(max:20)): 指定した利用履歴の残高
+getOperatorCode(履歴番号(max:20)): 指定した利用履歴の事業者コード
 """
 
 class readICCard:
