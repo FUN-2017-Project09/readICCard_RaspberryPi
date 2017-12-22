@@ -46,14 +46,12 @@ def defineData():
     except TypeError:
         tkmessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
         sys.exit(True)
-    #del hoge
         
 def GUI():
     global window
     window = Tkinter.Tk()
     window.title(u"ICカード割引")
     window.attributes("-zoomed", "1")
-    #window.geometry('800x480+0+0')
 
     canvas = Tkinter.Canvas(window, width = 800, height = 480)
     canvas.create_rectangle(800, 480, 0, 0, fill = 'white')   
@@ -66,8 +64,6 @@ def GUI():
     window.mainloop()
 
 def windel(event):
-    #window.destroy()
-    #GUI()
     sys.exit(True)
 
 def finish(event):
@@ -122,11 +118,10 @@ def start(event):
     ngdate      = Tkinter.Label(text = datehistory , foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
     ngtransmsg  = Tkinter.Label(text = u'バスが使用されていません', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
 
-    if stop_and_station == "バス":
+    if stop_and_station == "バス" or ID == CHEAT_CARD_ID:
             if datehistory == TODAY or ID == CHEAT_CARD_ID:
                 OK1.place(x = 60, y = 200)
                 button3.place(x = 370, y = 300)
-                #button3.config(state="disabled")
                 SASmessage0.place(x = 50, y = 100)
                 SASmessage1.place(x = 450, y = 100)
             else:
@@ -144,9 +139,6 @@ def start(event):
     button1.place(x = 510, y = 300)
     button2.place(x = 655, y = 300)
     window.mainloop()
-
-
-
 
 if __name__ == '__main__':
     GUI()

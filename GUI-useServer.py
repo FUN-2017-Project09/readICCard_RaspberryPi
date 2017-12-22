@@ -17,14 +17,13 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 today = datetime.date.today()
 TODAY = str(today.year) + "/" + str(today.month) + "/" + str(today.day)
-#TODAY = "2017/10/23"
 ID = ""
 datehistory = ""
 stop_and_station =  ""
 balance = 0
 CHEAT_CARD_ID = "011203123D180320"
 judge = "OK"
-
+sessionMode = 0 #0:local, 1:online
 
 def defineData():
     global ID, datehistory, stop_and_station, balance
@@ -34,7 +33,9 @@ def defineData():
         forData = hoge.getUseHistory()
         ID = hoge.getIDM()
         balance = hoge.getBalance(0)
+        #ICカード過去20件の履歴にアクセス
         for i  in range(20):
+            #条件にあった履歴(指定交通機関)に出会った時点で終了
             if ((forData[i][1] == 15 and forData[i][3] == 15) or (forData[i][1] == "13" and forData[i][3] == "13")) and (hoge.getOperatorCode(i) == 2315 or hoge.getOperatorCode(i) == 2316):
                 stop_and_station = "バス"
                 datehistory = "20" + str(hoge.getYear(i)) + "/" + str(hoge.getMonts(i)) + "/" + str(hoge.getDay(i))
@@ -51,32 +52,28 @@ def defineData():
     except TypeError:
         tkMessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
         sys.exit(True)
-    #del hoge
 
-
-
+#サーバにアクセス
 def reg():
     global judge
-
     payload = {
     'email': 'root@fun.ac.jp',
     'password': 'project9',
     }
 
-    
     session = requests.session()
-    
-    #tokenr = session.get("http://funlbs.azurewebsites.net/login_lbs/public_html/login.php", verify=False) 
-    tokenr = session.get('http://192.168.2.254/www/login_lbs/public_html/login.php', verify=False) #local
+    if sessionMode == 0:
+        tokenr = session.get('http://192.168.2.254/www/login_lbs/public_html/login.php', verify=False)
+        logg = session.post('http://192.168.2.254/www/login_lbs/public_html/login.php', data = payload,  verify=False)
+        URL = "http://192.168.2.254/www/login_lbs/public_html/icas_discount/register.php?Area=1&IDm="
+    else:
+        tokenr = session.get("http://funlbs.azurewebsites.net/login_lbs/public_html/login.php", verify=False)
+        logg = session.post("http://funlbs.azurewebsites.net/login_lbs/public_html/login.php", data = payload, verify=False)
+        URL = "http://funlbs.azurewebsites.net/login_lbs/public_html/icas_discount/register.php?Area=1&IDm="
 
     soup = BeautifulSoup(tokenr.text)
     token = soup.find(attrs = {'name': 'token'}).get('value')
     payload['token'] = token
-    #logg = session.post("http://funlbs.azurewebsites.net/login_lbs/public_html/login.php", data = payload, verify=False)
-    logg = session.post('http://192.168.2.254/www/login_lbs/public_html/login.php', data = payload,  verify=False) #local
-
-    URL = "http://192.168.2.254/www/login_lbs/public_html/icas_discount/register.php?Area=1&IDm="  #local
-    #URL = "http://funlbs.azurewebsites.net/login_lbs/public_html/icas_discount/register.php?Area=1&IDm="
     totalURL = URL + ID
     check = session.get(totalURL, data = payload, verify=False)
 
@@ -85,7 +82,7 @@ def reg():
     else:
         judge = "OK"
 
-        
+#アプリケーションGUIを作成する
 def GUI():
     global window
     window = Tkinter.Tk()
@@ -102,12 +99,14 @@ def GUI():
     button.config(font=("游ゴシック Light", 60))
     window.mainloop()
 
+#Trueで終了（シェルにより再起動）
 def windel(event):
     sys.exit(True)
-
+#Falseで終了（シェルによる再起動なし）
 def finish(event):
     sys.exit(False)
 
+#クーポン発券をArduinoに指示
 def printCoupon(event):
     global printed
     if printed == 0:
@@ -119,21 +118,19 @@ def printCoupon(event):
     if printed == 1:
         tkMessageBox.showerror("printed", "印刷完了済み")
 
-
 def start(event):
     while True:
         defineData()
         if ID != "":
             break
 
+    #通常処理
     if stop_and_station == "バス":
         if datehistory == TODAY:
             reg()
-
-    
-    if ID ==  "011203123D180320":
+    #チートカード利用
+    if ID ==CHEAT_CARD_ID:
         reg()
-    
 
     global printed
     printed = 0
@@ -170,10 +167,10 @@ def start(event):
 
     twicemsg = Tkinter.Label(text = u'本日は既にご利用済みです', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
 
-    
-    if stop_and_station == "バス":
+
+    if stop_and_station == "バス" or ID == CHEAT_CARD_ID:
         if datehistory == TODAY or ID == CHEAT_CARD_ID:
-            if judge == "OK":  
+            if judge == "OK" or ID == CHEAT_CARD_ID:  
                 OK1.place(x = 60, y = 250)
                 button3.place(x = 335, y = 350)
             else:
@@ -185,7 +182,6 @@ def start(event):
     else:
         NG1.place(x = 60, y = 230)
         ngtransmsg.place(x = 60, y = 300)
-    
 
     IDmessage0.place(x = 50, y = 20)
     IDmessage1.place(x = 130 , y = 20)
@@ -196,8 +192,6 @@ def start(event):
     button1.place(x = 480, y = 350)
     button2.place(x = 625, y = 350)
     window.mainloop()
-
-    
 
 if __name__ == '__main__':
     GUI()
