@@ -33,7 +33,9 @@ def defineData():
         forData = hoge.getUseHistory()
         ID = hoge.getIDM()
         balance = hoge.getBalance(0)
+        #ICカード過去20件の履歴にアクセス
         for i  in range(20):
+            #条件にあった履歴(指定交通機関)に出会った時点で終了
             if ((forData[i][1] == 15 and forData[i][3] == 15) or (forData[i][1] == "13" and forData[i][3] == "13")) and (hoge.getOperatorCode(i) == 2315 or hoge.getOperatorCode(i) == 2316):
                 stop_and_station = "バス"
                 datehistory = "20" + str(hoge.getYear(i)) + "/" + str(hoge.getMonts(i)) + "/" + str(hoge.getDay(i))
@@ -51,6 +53,7 @@ def defineData():
         tkMessageBox.showerror("TypeError","アクセスした履歴データに日付のデータがありませんでした。\n別のカードで再試行してください。")
         sys.exit(True)
 
+#サーバにアクセス
 def reg():
     global judge
     payload = {
@@ -79,6 +82,7 @@ def reg():
     else:
         judge = "OK"
 
+#アプリケーションGUIを作成する
 def GUI():
     global window
     window = Tkinter.Tk()
@@ -95,12 +99,14 @@ def GUI():
     button.config(font=("游ゴシック Light", 60))
     window.mainloop()
 
+#Trueで終了（シェルにより再起動）
 def windel(event):
     sys.exit(True)
-
+#Falseで終了（シェルによる再起動なし）
 def finish(event):
     sys.exit(False)
 
+#クーポン発券をArduinoに指示
 def printCoupon(event):
     global printed
     if printed == 0:
@@ -160,6 +166,7 @@ def start(event):
     ngtransmsg  = Tkinter.Label(text = u'バスが使用されていません', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
 
     twicemsg = Tkinter.Label(text = u'本日は既にご利用済みです', foreground = '#ff0000', background = '#ffaacc', font=(u'游ゴシック Light', 28))
+
 
     if stop_and_station == "バス" or ID == CHEAT_CARD_ID:
         if datehistory == TODAY or ID == CHEAT_CARD_ID:
